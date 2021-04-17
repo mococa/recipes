@@ -62,13 +62,21 @@
         </div>
         <div class="comment-section flex-vr" style="gap:5px;">
             <span class="title">Comentários</span>
-            <div class="my-comment"></div>
-            <%for(const comentario of receita.comentarios){%>
+            <div class="my-comment flex-vr">
+                <label>Nome:</label>
+                <input type="text">
+                <label>Comentário:</label>
+                <textarea name="" id="" cols="30" rows="10"></textarea>
+                <button>Comentar</button>
+            </div>
+            <%for(const comentario of receita.comentarios.reverse()){%>
                 <div class="comentario flex-hr" style="gap:5px;">
                     <img src="../src/svgs/avatar.svg" width='50px' alt="">
                     <div class="comentario-itself flex-vr">
                         <div class="comentario-nome" style="font-weight: medium;">
                             <%=comentario.nome%>
+                                <span class="time" value="<%=comentario.timestamp%>">
+                                </span>
                         </div>
                         <div class="comentario-texto">
                             <%=comentario.comentario%>
@@ -83,23 +91,55 @@
 
 </body>
 <script>
- $.ajaxSetup({ contentType: "application/json; charset=utf-8" });
-$('.rating a').click(function(){
+    function datar(ts) {
+        function data(tts) { return new Date(tts).toLocaleString("pt-BR", { timeZone: 'America/Sao_Paulo' }) }
+        function hr(tts) { return data(tts).split(" ")[1].slice(0, -3) }
+        function dia(tts) { return data(tts).split(" ")[0] }
+        var now = {
+            day: dia(new Date().getTime()).split("/")[0],
+            month: dia(new Date().getTime()).split("/")[1],
+            year: dia(new Date().getTime()).split("/")[2],
+            hours: hr(new Date().getTime()).split(":")[0],
+            minutes: hr(new Date().getTime()).split(":")[1]
+        }
+        var isToday = (ts) => new Date().getTime() - 24 * 60 * 60 * 100 < ts
+        var isYesterday = (ts) => new Date().getTime() - 2 * 24 * 60 * 60 * 100 < ts
+        if (isToday) { return "Hoje às " + hr(ts) }
+        if (isYesterday) { return "Ontem às" + hr(ts) }
+        return dia(ts) + " às " + hr(ts)
+    }
+    $('.time').each((i, el) => {
+        var ts = parseInt($(el).attr('value'));
+        $(el).text(datar(ts));
 
-  try{
-    //alert($(this).attr('name'))
-    var value = JSON.parse($(this).attr('name'))
-    $.post('/vote', JSON.stringify({
-      thumbUp:value,
-      href:location.pathname.substring(2, location.pathname.length)
-    }), function(res){
-          if(res.status==200) alert("Seu voto foi contado")
-    }).fail(()=>alert('fail'))
+    })
 
-  }catch(e){
-  console.log(e)
-  }
 
-})
+    $('.rating a').click(function () {
+        var value = JSON.parse($(this).attr('name'))
+        $.post('/vote', JSON.stringify({
+            thumbUp: value,
+            href: location.pathname.substring(2, location.pathname.length)
+        }), function (res) {
+            if (res.status == 200) {
+                swal("Tudo certo", "Seu voto foi contado", "sucess")
+            } else {
+                swal("Oops", res.message, "error")
+            }
+        }).fail(() => alert('Falha no servidor'))
+    })
+    $('.my-comment button').click(function () {
+        $.post('/comment', JSON.stringify({
+            href: location.pathname.substring(2, location.pathname.length),
+            comentario: { nome: $('.my-comment input').val(), comentario: $('.my-comment textarea').val() }
+        }), function (res) {
+            if (res.status == 200) {
+                swal("Tudo certo", "Seu voto foi contado", "sucess")
+            } else {
+                swal("Oops", res.message, "error")
+            }
+        }).fail(() => alert("Falha no servidor"))
+    })
 </script>
+
 </html>

@@ -4,14 +4,12 @@ const app = express()
 const Controller = require('./controller.js')
 const port = 3000;
 
-console.log(Controller)
-
 app.use(express.json())
-
+                                    //#########
 app.use(express.static('public'))   //##
 app.set('views', './public/views')  //## EJS 
 app.set('view engine', 'ejs')       //##
-
+                                    //#########
 app.listen(port, () => console.log("Servidor rodando na porta", port))
 app.get("/", async (req, res) => {
   const tmp = await Controller.Recipes.get("nome")
@@ -32,7 +30,7 @@ app.get("/", async (req, res) => {
     };
 }
 const receitas = tmp.sort((a,b)=>a.votes.up < b.votes.up)
-const recentes = tmp.sort((a,b)=>a.votes.up < b.votes.up)
+const recentes = tmp.sort((a,b)=>a.criadoEm < b.criadoEm).slice(0,4);
 
   
   return res.render("home", { receitas: receitas, recentes: recentes })

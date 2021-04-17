@@ -9,37 +9,61 @@
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <style>
-    .forum{
+    .forum {
         padding: 15px 30px;
+        justify-content: center;
+
     }
+
     .receita {
         display: flex;
         cursor: pointer;
         padding: 20px 10px;
-        color:black;
-        background-color: rgba(0, 0, 0, 0.1);
+        color: black;
+        background-color: #ededed;
         border-radius: 10px;
         justify-content: space-between;
         text-transform: uppercase;
-        flex:1;
+        flex: 1;
+        white-space: nowrap;
     }
-
+    .clickable:hover{
+        cursor:pointer;
+        filter:brightness(95%);
+    }
     .props span {
         display: flex;
         place-items: center;
         gap: 5px;
     }
+
+    .add-recipe {
+        display: flex;
+        text-transform: uppercase;
+        background: #6FDD88;
+        justify-content: center;
+        padding: 15px 30px;
+        border-radius: 5px;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .recentes-bloco {
+        background: #ededed;
+        flex: 1;
+        border-radius: 5px;
+        padding:15px;
+    }
 </style>
 
 <body class="flex-vr">
     <%- include ('./partials/header')%>
-    <div class="forum">
-        <div class="flex-hr" style="gap:20px;flex-wrap: wrap-reverse; width:80vw">
-            <div class="left flex-vr" style="gap:20px;flex:1;">
+        <div class="forum flex-hr" style="gap:20px;flex-wrap: wrap-reverse;">
+            <div class="left flex-vr" style="gap:20px;flex:2;">
                 <span>Receitas Populares</span>
                 <div class="populares flex-vr" style="gap:20px">
                     <%for(const receita of receitas){%>
-                        <a href="/p<%=receita.href%>" class="receita flex-hr" style="gap:15px">
+                        <a href="/p<%=receita.href%>" class="receita flex-hr clickable" style="gap:15px">
                             <%=receita.nome%>
                                 <div class="props flex-hr" style="gap:5px">
                                     <span class="views">
@@ -65,9 +89,19 @@
                         <%}%>
                 </div>
             </div>
+            <div class="right flex-vr" style="gap:20px;flex:1;">
+                <span>Recentes</span>
+                <div class="recentes-bloco flex-vr">
+                    <%for(const recente of recentes){%>
+                        <a href="<%=recente.href%>">
+                            <%=recente.nome%>
+                        </a>
+                        <%}%>
+                </div>
+                <a href="new" class="add-recipe clickable">Adicionar Receita</a>
+            </div>
         </div>
-    </div>
-        
+
 </body>
 
 </html>

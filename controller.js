@@ -125,6 +125,7 @@ return module.exports = {
               comentarios: {
                 nome: comentario.nome,
                 comentario: comentario.comentario,
+                timestamp: new Date().getTime(),
                 id: generateString(10)
               }
             }

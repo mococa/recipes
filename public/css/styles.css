@@ -13,7 +13,7 @@ body div {
 }
 
 .flex-hr {
-    flex-flow: row;
+    flex-direction: row;
 }
 
 .flex-vr {
