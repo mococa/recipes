@@ -80,9 +80,8 @@ app.post('/vote', async (req, res) => {
 
   if (href.length) {
     Controller.vote(href, ip, thumbUp)
-
-    return await res.json({
-      message: "Tudo certo",
+    return res.json({
+      message: "Voto contado",
       status: 200
     })
 

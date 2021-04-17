@@ -3,12 +3,21 @@
     margin: 0;
     padding: 0;
 }
+.header{
+    color:#ededed;
+    padding:10px 20px;
+    background-color: tomato;
+    font-size: 20px;
+}
+.header span a{
+    color:#ededed
+}
 
 a:link {
     text-decoration: none;
 }
 
-body div {
+body div:not(.swal-overlay,.swal-modal,.swal-icon,.swal-title,.swal-text) {
     display: flex;
 }
 
@@ -18,4 +27,15 @@ body div {
 
 .flex-vr {
     flex-flow: column;
+}
+.footer{
+    background: tomato;
+    padding: 20px;
+    list-style: none;
+    align-content: normal;
+    gap:20px;
+}
+.footer ul{
+    list-style: none;
+    color: white;
 }

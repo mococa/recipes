@@ -135,6 +135,22 @@
         }), function (res) {
             if (res.status == 200) {
                 swal("Tudo certo", "Seu voto foi contado", "sucess")
+                $('.comment-section > div:eq(1)')
+                    .before(`
+                    <div class="comentario flex-hr" style="gap:5px;">
+                                <img src="../src/svgs/avatar.svg" width='50px' alt="">
+                                <div class="comentario-itself flex-vr">
+                                    <div class="comentario-nome" style="font-weight: medium;">
+                                        ${$('.my-comment input').val()}
+                                        <span class="time">Agora
+                                        </span>
+                                    </div>
+                                <div class="comentario-texto">
+                                    ${$('.my-comment textarea').val()}
+                                </div>
+                            </div>
+                    </div>`
+                    )
             } else {
                 swal("Oops", res.message, "error")
             }
