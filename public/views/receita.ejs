@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youmy - <%=receita.nome%>
+    <title>Yoummy - <%=receita.nome%>
     </title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
@@ -55,8 +55,8 @@
         <div class="rating flex-vr">
             <span class="title">Gostou?</span>
             <div class="flex-hr" style="gap:10px">
-                <a href="">Sim</a>
-                <a href="">Não</a>
+                <a name="true">Sim</a>
+                <a name="false">Não</a>
             </div>
 
         </div>
@@ -82,5 +82,24 @@
         </div>
 
 </body>
+<script>
+ $.ajaxSetup({ contentType: "application/json; charset=utf-8" });
+$('.rating a').click(function(){
 
+  try{
+    //alert($(this).attr('name'))
+    var value = JSON.parse($(this).attr('name'))
+    $.post('/vote', JSON.stringify({
+      thumbUp:value,
+      href:location.pathname.substring(2, location.pathname.length)
+    }), function(res){
+          if(res.status==200) alert("Seu voto foi contado")
+    }).fail(()=>alert('fail'))
+
+  }catch(e){
+  console.log(e)
+  }
+
+})
+</script>
 </html>
