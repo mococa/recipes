@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youmy</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<style>
+    .forum{
+        padding: 15px 30px;
+    }
+    .receita {
+        display: flex;
+        cursor: pointer;
+        padding: 20px 10px;
+        color:black;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        justify-content: space-between;
+        text-transform: uppercase;
+        flex:1;
+    }
+
+    .props span {
+        display: flex;
+        place-items: center;
+        gap: 5px;
+    }
+</style>
+
+<body class="flex-vr">
+    <%- include ('./partials/header')%>
+    <div class="forum">
+        <div class="flex-hr" style="gap:20px;flex-wrap: wrap-reverse; width:80vw">
+            <div class="left flex-vr" style="gap:20px;flex:1;">
+                <span>Receitas Populares</span>
+                <div class="populares flex-vr" style="gap:20px">
+                    <%for(const receita of receitas){%>
+                        <a href="/p<%=receita.href%>" class="receita flex-hr" style="gap:15px">
+                            <%=receita.nome%>
+                                <div class="props flex-hr" style="gap:5px">
+                                    <span class="views">
+                                        <img src="../src/svgs/views.svg" alt="">
+                                        <span>
+                                            <%=receita.views%>
+                                        </span>
+                                    </span>
+                                    <span class="upvotes">
+                                        <img src="../src/svgs/upvote.svg" alt="">
+                                        <span>
+                                            <%=receita.votes.up%>
+                                        </span>
+                                    </span>
+                                    <span class="downvotes">
+                                        <img src="../src/svgs/downvote.svg" alt="">
+                                        <span>
+                                            <%=receita.votes.down%>
+                                        </span>
+                                    </span>
+                                </div>
+                        </a>
+                        <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+</body>
+
+</html>

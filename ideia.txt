@@ -1,0 +1,59 @@
+RECEITAS
+    criadoEm -> INTEGER
+    ingredientes -> ARRAY (init blank)
+        [ 
+        igrediente
+        quantidade
+        ],
+    href -> STRING
+    votes
+        up -> INTEGER
+        down -> INTEGER
+    views -> INTEGER
+    comentarios -> ARRAY
+        [
+            nome,
+            comentario
+        ]
+USUARIOS
+    ip -> STRING
+    votes -> ARRAY (init blank)
+        [
+            href,
+            voted
+                like -> BOOLEAN
+        ]
+
+
+onPost(comentario in receita): -> receita.comentarios.add(comentario)
+onPost(pVote, pIp, pHref in receita): ->
+    se achar pIp em USUARIOS.ip: ->
+        usuario = USUARIOS em que pIp == USUARIO.ip
+        para cada voto em usuario.votes:
+            se voto.href == pHref: ->
+                se pVote nao for igual ao voto.like
+                    ATUALIZAR voto.like PARA pVote
+    senão: ->
+        ATUALIZAR USUARIOS para + 1 com votes [ href = pHref, voted.like = pVote ]
+        se vote.like == true: ->
+            ATUALIZAR receita com INCREMENTAR votes.up
+        senão:
+            ATUALIZAR receita com INCREMENTAR votes.up
+onPost(receita): ->
+    ATUALIZAR RECEITA para +1 com
+        criadoEm = AGORA
+        nome = receita.nome
+        ingredientes = receita.ingredientes
+        href = GERAR STRING
+        votes
+            up = 0
+            down = 0
+        views = 0
+        comentarios = [ ]
+onGet(): ->
+    receitas = [ ]
+    PROCURAR TODAS _receitas em RECEITAS:
+        se _receitas tiver algo dentro:
+            receitas = _receitas ORDENADO por votes.up
+
+        RETORNAR receitas

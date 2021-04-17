@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base href="/">
+    </base>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youmy - <%=receita.nome%>
+    </title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<style>
+    .title {
+        font-weight: bold;
+        font-size: 20px;
+    }
+</style>
+
+<body>
+    <%- include('./partials/header')%>
+        <span class="title">
+            <%=receita.nome%>
+        </span><br>
+        <div class="ingredientes flex-vr">
+            <span class="title">Ingredientes:</span>
+            <%for(const ingrediente of receita.ingredientes){%>
+                <div class="ingrediente flex-hr">
+                    <span>
+                        <%=ingrediente.quantidade%>
+                            <%if(ingrediente.medida){%>
+                                <%=ingrediente.medida%>
+                                    <%}%>
+                                        <%if(ingrediente.ingrediente=="água" ){%>
+                                            <span>d'</span>
+                                            <%}else{%>
+                                                <span>de</span>
+                                                <%}%>
+                                                    <%=ingrediente.ingrediente%>
+                    </span>
+
+                </div>
+                <%}%>
+        </div>
+        <div class="passos flex-vr">
+            <span class="title">Modo de preparo</span>
+            <%for(const [i,passo] of receita.passos.entries()){%>
+                <span class="passo-t">Passo <%=i+1%></span>
+                <span class="passo">
+                    > <%=passo%>
+                </span>
+                <%}%>
+        </div>
+        <div class="rating flex-vr">
+            <span class="title">Gostou?</span>
+            <div class="flex-hr" style="gap:10px">
+                <a href="">Sim</a>
+                <a href="">Não</a>
+            </div>
+
+        </div>
+        <div class="comment-section flex-vr" style="gap:5px;">
+            <span class="title">Comentários</span>
+            <div class="my-comment"></div>
+            <%for(const comentario of receita.comentarios){%>
+                <div class="comentario flex-hr" style="gap:5px;">
+                    <img src="../src/svgs/avatar.svg" width='50px' alt="">
+                    <div class="comentario-itself flex-vr">
+                        <div class="comentario-nome" style="font-weight: medium;">
+                            <%=comentario.nome%>
+                        </div>
+                        <div class="comentario-texto">
+                            <%=comentario.comentario%>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
+                    <%if(receita.comentarios.length===0){%>
+                        <span>Ainda não houve comentários desta receita</span>
+                        <%}%>
+        </div>
+
+</body>
+
+</html>
