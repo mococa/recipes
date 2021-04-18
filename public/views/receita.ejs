@@ -16,17 +16,39 @@
         font-weight: bold;
         font-size: 20px;
     }
+    .subset{
+      padding-left:10px;
+    }
+    .padding-padrao{
+      padding:20px;
+    }
+    .my-comment{
+      flex: 1;
+      max-width: 512px;
+      margin-bottom: 20px;
+      gap:5px;
+    }
+    .comentario-nome{
+      gap:5px;
+    }
+    .time{
+      font-size: 12px;
+      color: #818181;
+      display: flex;
+      place-items: flex-end;
+      padding-bottom: 2px;
+    }
 </style>
 
 <body>
     <%- include('./partials/header')%>
-        <span class="title">
+        <span class="title" style="padding:40px 20px 0">
             <%=receita.nome%>
         </span><br>
-        <div class="ingredientes flex-vr">
+        <div class="ingredientes flex-vr padding-padrao">
             <span class="title">Ingredientes:</span>
             <%for(const ingrediente of receita.ingredientes){%>
-                <div class="ingrediente flex-hr">
+                <div class="ingrediente flex-hr subset">
                     <span>
                         <%=ingrediente.quantidade%>
                         <%if(ingrediente.medida && ingrediente.medida != "x"){%>
@@ -48,30 +70,32 @@
                 </div>
                 <%}%>
         </div>
-        <div class="passos flex-vr">
+        <div class="passos flex-vr padding-padrao">
             <span class="title">Modo de preparo</span>
             <%for(const [i,passo] of receita.passos.entries()){%>
                 <span class="passo-t">Passo <%=i+1%></span>
-                <span class="passo">
+                <span class="passo subset">
                     > <%=passo%>
                 </span>
                 <%}%>
         </div>
-        <div class="rating flex-vr">
+        <div class="rating flex-vr padding-padrao">
             <span class="title">Gostou?</span>
             <div class="flex-hr" style="gap:10px">
-                <a name="true">Sim</a>
-                <a name="false">Não</a>
+                <a name="true" style="display: flex;
+    gap: 5px;"><i class="fas fa-thumbs-up"></i>Sim</a>
+                <a name="false" style="display: flex;
+    gap: 5px;"><i class="fas fa-thumbs-down"></i>Não</a>
             </div>
 
         </div>
-        <div class="comment-section flex-vr" style="gap:5px;">
+        <div class="comment-section flex-vr padding-padrao" style="gap:5px;">
             <span class="title">Comentários</span>
             <div class="my-comment flex-vr">
                 <label>Nome:</label>
                 <input type="text">
                 <label>Comentário:</label>
-                <textarea name="" id="" cols="30" rows="10"></textarea>
+                <textarea draggable="false" name="" id="" cols="30" rows="10" style="resize:none"></textarea>
                 <button>Comentar</button>
             </div>
             <%for(const comentario of receita.comentarios.reverse()){%>
@@ -127,7 +151,7 @@
             href: location.pathname.substring(2, location.pathname.length)
         }), function (res) {
             if (res.status == 200) {
-                swal("Tudo certo", "Seu voto foi contado", "sucess")
+                swal("Tudo certo", "Seu voto foi contado", "success")
             } else {
                 swal("Oops", res.message, "error")
             }
@@ -139,7 +163,7 @@
             comentario: { nome: $('.my-comment input').val(), comentario: $('.my-comment textarea').val() }
         }), function (res) {
             if (res.status == 200) {
-                swal("Tudo certo", "Seu voto foi contado", "sucess")
+                swal("Tudo certo", "Seu voto foi contado", "success")
                 $('.comment-section > div:eq(1)')
                     .before(`
                     <div class="comentario flex-hr" style="gap:5px;">

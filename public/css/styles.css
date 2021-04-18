@@ -24,7 +24,8 @@ body div:not(.swal-overlay,.swal-modal,.swal-icon,.swal-title,.swal-text) {
 body{
     display:flex;
     flex-flow: column;
-    height: 100vh;
+    min-height: 100vh;
+    flex:1;
 }
 .clickable:hover {
     cursor: pointer;

@@ -60,9 +60,9 @@
     }
 </style>
 
-<body>
+<body class="flex-vr" style="flex: 1;width:-webkit-fill-available;">
     <%- include('./partials/header')%>
-        <div class="top flex-hr" style="flex-wrap: wrap-reverse;height:100vh">
+        <div class="top flex-hr" style="flex-wrap: wrap-reverse;min-height:100vh">
             <div class="left flex-vr" style="flex:1">
                 <span>Ingredientes</span>
                 <div class="ingredientes-block flex-vr"></div>
@@ -122,6 +122,7 @@
         <%-include("./partials/footer")%>
 </body>
 <script>
+var adding = false;
     var passos = 0;
     var n_ingredientes = 1;
     var recipe = {
@@ -193,19 +194,28 @@
         })
     }
     $('.save-recipe').click(() => {
+    if(!adding){
+        $('.save-recipe').text("Enviando. Por favor aguarde")
+        adding = true;
         getSteps()
         $.post('/new', JSON.stringify({
             nome: $('.nome-receita').val(),
             ingredientes: recipe.ingredients,
             passos: recipe.steps
         }), function (res) {
+         $('.save-recipe').text("Enviar receita")
+        adding = false;
             if (res.status == 200) {
                 swal("Pronto", "Tudo certo!", "success").then(()=>location.href="/")
             } else {
                 swal("Oops", res.message, "error")
             }
         }).fail(() => alert('falha no servidor'))
+        }else{
+        swal("À caminho", "Sua receita está sendo enviada, por favor aguarde", "warning");
+        }
     })
+  
 </script>
 
 </html>

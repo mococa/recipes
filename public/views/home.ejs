@@ -12,7 +12,7 @@
     .forum {
         padding: 15px 30px;
         justify-content: center;
-        height: 100vh;
+        min-height: 100vh;
     }
 
     .receita {
@@ -25,9 +25,14 @@
         justify-content: space-between;
         text-transform: uppercase;
         flex: 1;
-        white-space: nowrap;
+        flex-wrap:wrap;
     }
-
+    .props{
+      gap: 5px;
+      width: -webkit-fill-available;
+      place-content: flex-end;
+      flex: 1;
+    }
     .props span {
         display: flex;
         place-items: center;
@@ -42,6 +47,7 @@
         padding: 15px 30px;
         border-radius: 5px;
         color: white;
+        
         white-space: nowrap;
     }
 
@@ -49,14 +55,14 @@
         background: #ededed;
         flex: 1;
         border-radius: 5px;
-        padding: 15px;
+        padding: 15px 20px;
     }
 </style>
 
-<body class="flex-vr">
+<body class="flex-vr" style="flex: 1;width:-webkit-fill-available;">
     <%- include ('./partials/header')%>
         <div class="forum flex-hr" style="gap:20px;flex-wrap: wrap-reverse;">
-            <div class="left flex-vr" style="gap:20px;flex:2;">
+            <div class="left flex-vr" style="gap:20px;    flex: 512px;">
                 <span>Receitas Populares</span>
                 <div class="populares flex-vr" style="gap:20px">
                     <%for(const receita of receitas){%>
@@ -86,9 +92,9 @@
                         <%}%>
                 </div>
             </div>
-            <div class="right flex-vr" style="gap: 20px;flex: 1;height: 50vh;place-self: flex-end;">
-                <span>Recentes</span>
-                <div class="recentes-bloco flex-vr">
+            <div class="right flex-vr" style="flex: 1;place-self: flex-end;">
+                <span style="margin-bottom:10px;">Recentes</span>
+                <div class="recentes-bloco flex-vr " style="margin-bottom:10px;">
                     <%for(const recente of recentes){%>
                         <a href="<%=recente.href%>">
                             <%=recente.nome%>

@@ -166,17 +166,14 @@ return module.exports = {
   vote: function (href, ip, thumbUp) {
     db.users.loadDatabase()
     db.recipes.loadDatabase()
-    console.log(`${ip} tentando votar em ${href} como ${thumbUp}`)
     db.users.find({ ip: ip }, async (err, usuarios) => {
-      if (err) console.log("bip bip")
+      if (err) console.log("bip bop error")
       if (usuarios.length) {
         const votes = usuarios[0].votes
-        console.log("Seus votos: ", votes)
         var found = false
         for (const [i, _voto] of votes.entries()) {
           if (_voto.href == href) {
             found = true;
-            console.log("Aparentemente ele era ", _voto.like)
             if (thumbUp != _voto.like) {
               console.log("Changing mind...")
               if (thumbUp) {
@@ -195,7 +192,6 @@ return module.exports = {
               db.users.find({ ip: ip }, (e, d) => {
                 if (e) console.log("ooops 112");
                 const v = d[0].votes[i].like
-                console.log("Currently its ", v);
                 const d_ = d[0]
                 d_.votes[i].like = !v
                 db.users.update({ ip: ip }, { $set: d_ }, {}, (ee, nn, uu) => {
@@ -207,7 +203,6 @@ return module.exports = {
           }
         }
         if (!found) {
-          console.log("Adicioanndo opiniao")
           db.users.update({ ip: ip }, { $push: { votes: { href: href, like: thumbUp } } }, {}, (ee, nn, uu) => {
             if (ee) { console.log("ooops 117"); }
           })
