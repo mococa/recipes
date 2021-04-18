@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOUMMY - Nova Receita</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<style>
+    .top {
+        padding: 20px 60px;
+        flex-wrap: wrap;
+        row-gap: 30px;
+        column-gap: 30px;
+    }
+
+    .left,
+    .right {
+        gap: 10px;
+    }
+
+    .ingredientes-block {
+        background: #ededed;
+        padding: 20px;
+        border-radius: 5px;
+        min-width: 200px;
+        min-height: 200px;
+    }
+
+    .qtd {
+        font-size: 90px;
+        gap: 10px;
+        place-items: center;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .arrows img {
+        height: 60px;
+    }
+
+    .maker {
+        place-items: center;
+        gap: 10px;
+    }
+
+    .add-pan {
+        padding: 10px 20px;
+        background: tomato;
+        color: white;
+    }
+
+    .save-recipe {
+        padding: 10px 20px;
+        background: #79e079;
+        color: white;
+        justify-content: center;
+    }
+</style>
+
+<body>
+    <%- include('./partials/header')%>
+        <div class="top flex-hr" style="flex-wrap: wrap-reverse;height:100vh">
+            <div class="left flex-vr" style="flex:1">
+                <span>Ingredientes</span>
+                <div class="ingredientes-block flex-vr"></div>
+            </div>
+            <div class="right flex-vr" style="flex:2">
+                <span>Receita</span>
+                <span style="display:flex; gap:10px">Nome: <input type="text" class="nome-receita"
+                        style="flex:1;"></span>
+                <div class="maker flex-vr">
+                    <div class="row"
+                        style="place-items:center;gap:10px;flex-wrap: wrap;flex:1;width: -webkit-fill-available;">
+                        <div class="qtd flex-hr">
+                            <div class="arrows flex-vr" style="gap:10px;">
+                                <img src="../src/svgs/arrow-up.svg" alt="" class="clickable">
+                                <img src="../src/svgs/arrow-down.svg" alt="" class="clickable">
+                            </div>
+                            <span>1</span>
+                        </div>
+                        <div class="flex-vr" style="gap:10px;flex-wrap: wrap;flex: 2;">
+                            <div class="flex-hr" style="gap:10px;flex-wrap: wrap;">
+                                <div class="unidade flex-vr" style="flex:1">
+                                    <span>Unidade</span>
+                                    <select name="" id="select">
+                                        <option selected value="x">Quantidade</option>
+                                        <option value="pitada">Pitada</option>
+                                        <option value="copo">Copo</option>
+                                        <option value="colher de café">Colher de café</option>
+                                        <option value="colher de sobremesa">Colher de sobremesa</option>
+                                        <option value="colher de sopa">Colher de sopa</option>
+                                        <option value="colher de chá">Colher de chá</option>
+                                        <option value="xícara de chá">Xícara de chá</option>
+                                        <option value="mg">Miligramas</option>
+                                        <option value="g">Gramas</option>
+                                        <option value="kg">Kg</option>
+                                    </select>
+                                </div>
+                                <span style="display:flex;flex-wrap:wrap;align-self: flex-end;">de</span>
+                                <div class="ingrediente flex-vr" style="flex:1">
+                                    <span>Ingrediente</span>
+                                    <input type="text" class="ingrediente_input">
+                                </div>
+
+                            </div>
+                            <div class="add-pan clickable" style="justify-content: center;" onclick="addToPan()">
+                                Adicionar aos ingredientes</div>
+                        </div>
+                    </div>
+
+                </div>
+                <span>Modo de Preparo:</span>
+                <div class="passos flex-vr" style="gap:10px">
+                    <button>Adicionar passo</button>
+                </div>
+                <div class="save-recipe clickable">Enviar receita</div>
+            </div>
+        </div>
+        <%-include("./partials/footer")%>
+</body>
+<script>
+    var passos = 0;
+    var n_ingredientes = 1;
+    var recipe = {
+        ingredients: [],
+        steps: [],
+        name: ""
+    }
+    $('.passos button').click(() => {
+        if (passos === 0) {
+            $('.passos button').before("<span>Passos:</span>")
+        }
+        passos += 1;
+        $('.passos button').before(`
+                    <div class="passo flex-hr" style="flex:1; gap:10px;">
+                        <span>Passo ${passos}: </span>
+                        <input type="text" style="display:flex;flex:1;">
+                        <div class="del-passo clickable" onclick="removeStep(this)">x</div>
+                    </div>`)
+        getSteps()
+    })
+    $('.arrows img').click(function () {
+        if (parseInt($(this).index())) {
+            if (n_ingredientes - 1) { n_ingredientes -= 1 }
+
+        } else { n_ingredientes += 1 }
+        $('.qtd span').text(n_ingredientes)
+    })
+    function removeStep(el){
+        var index = ($(el).parent().index())-1
+        recipe.steps.splice(index, 1)
+        $(el).parent().remove();
+        passos-=1;
+        rename();
+        getSteps()
+    }
+    function rename() {
+        
+        if (passos) {
+            $('.passo').each((i, e) => {
+                var newPasso = parseInt(i) + 1;
+                $(e).find('span').text("Passo " + newPasso)
+                passos = newPasso;
+            })
+        } else {
+            $('.passos span').remove()
+        }
+    }
+    function addToPan() {
+        var txt = `${n_ingredientes}x ${$('#select').val() ? $('#select').val() + " de" : ""} ${$('.ingrediente_input').val()}`
+        if (n_ingredientes && $('.ingrediente_input').val()) {
+            $('.ingredientes-block').append(`<div style="justify-content:space-between">${txt} <span class="clickable" style="color:red;font-weight:bold" onclick="removeFromPan($(this).parent())">x</span></div>`)
+            recipe.ingredients.push({ quantidade: n_ingredientes, ingrediente: $('.ingrediente_input').val() })
+            if($('#select').val()){
+                recipe.ingredients[recipe.ingredients.length-1].medida= $('#select').val()
+            }
+        }
+    }
+    function removeFromPan(el) {
+        console.log(el.index())
+        console.log(recipe.ingredients)
+        recipe.ingredients.splice(el.index(), 1)
+        //console.log(recipe.ingredients)
+        el.remove()
+    }
+    function getSteps() {
+        recipe.steps = []
+        $('.passo input').each((i, e) => {
+            recipe.steps.push($(e).val())
+        })
+    }
+    $('.save-recipe').click(() => {
+        getSteps()
+        $.post('/new', JSON.stringify({
+            nome: $('.nome-receita').val(),
+            ingredientes: recipe.ingredients,
+            passos: recipe.steps
+        }), function (res) {
+            if (res.status == 200) {
+                swal("Pronto", "Tudo certo!", "success").then(()=>location.href="/")
+            } else {
+                swal("Oops", res.message, "error")
+            }
+        }).fail(() => alert('falha no servidor'))
+    })
+</script>
+
+</html>

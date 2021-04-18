@@ -7,18 +7,19 @@ function generateString(len) {
 }
 return module.exports = {
   Recipes: {
-    make: async function(nome, ingredientes, passos) {
+    make: async function (nome, ingredientes, passos, unidade) {
       if (nome) {
         db.recipes.loadDatabase()
         var recipe = new Promise((resolve, reject) => {
           db.recipes.count({
             href: '/' + nome.replace(/\s/g, "-").toLowerCase()
               .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-          }, function(e, n) {
+          }, function (e, n) {
             resolve({
               nome: nome,
               criadoEm: new Date().getTime(),
               ingredientes: ingredientes, // {quantidade:INTEGER, ingrediente: STRING}
+              medida: unidade,
               passos: passos,
               href: '/' + nome.replace(/\s/g, "-").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "/" + n,
               votes: { up: 0, down: 0 },
@@ -31,19 +32,25 @@ return module.exports = {
         return recipe.then(a => a)
       } else { return null }
     },
-    add: function(recipe) {
-      db.recipes.insert(recipe)
+    add: function (recipe) {
+      var promise = new Promise((resolve, reject) => {
+        db.recipes.insert(recipe, function (er, doc) {
+          if (er) return resolve(false)
+          resolve(true)
+        })
+      })
+      return promise.then(a => a)
     },
-    getHrefs: function() {
+    getHrefs: function () {
       db.recipes.loadDatabase()
       var promise = new Promise((resolve, reject) => {
-        db.recipes.find({}, function(err, recipes) {
+        db.recipes.find({}, function (err, recipes) {
           resolve(recipes.map(x => x.href))
         })
       })
       return promise.then(a => a)
     },
-    getByHref: function(href) {
+    getByHref: function (href) {
       db.recipes.loadDatabase()
       var promise = new Promise((resolve, reject) => {
         db.recipes.find({ href: href }, (er, recipes) => {
@@ -54,18 +61,19 @@ return module.exports = {
       })
       return promise.then(a => a)
     },
-    get: function() {
+    get: async function () {
       db.recipes.loadDatabase()
       var promise = new Promise((resolve, reject) => {
-        db.recipes.find({},function(err, recipes) {
+        db.recipes.find({}).sort({"votes.up":-1, "votes.down":1,"views":-1, "nome":1}).exec(async function(err, recipes) {
           if (err) console.log(err)
-          return resolve(recipes)
+          resolve (await recipes)
+          
         })
       })
-      return promise.then(a => a)
+      return await promise.then(a => a)
     },
     Views: {
-      add: function(href) {
+      add: function (href) {
         var promise = new Promise((resolve, reject) => {
           db.recipes.update({ href: href }, { $inc: { views: 1 } }, {}, (e, n, u) => {
             if (e) return resolve(false)
@@ -74,7 +82,7 @@ return module.exports = {
         })
         return promise.then(a => a)
       },
-      clear: function(href) {
+      clear: function (href) {
         var promise = new Promise((resolve, reject) => {
           db.recipes.update({ href: href }, { $set: { views: 0 } }, {}, (e, n, u) => {
             if (e) return resolve(false)
@@ -85,7 +93,7 @@ return module.exports = {
       }
     }
   },
-  addUser: function(ip, firstVote) {
+  addUser: function (ip, firstVote) {
     var promise = new Promise((resolve, reject) => {
       if (firstVote) {
         db.users.insert({ ip: ip, votes: [firstVote] },
@@ -115,7 +123,7 @@ return module.exports = {
     return promise.then(a => a)
   },
   Comments: {
-    make: function(href, comentario) {
+    make: function (href, comentario) {
       db.recipes.loadDatabase()
       var promise = new Promise((resolve, reject) => {
         db.recipes.update({ href: href },
@@ -136,7 +144,7 @@ return module.exports = {
       });
       return promise.then(a => a)
     },
-    clear: function(href) {
+    clear: function (href) {
       var promise = new Promise((resolve, reject) => {
         db.recipes.update({ href: href }, { $set: { comentarios: [] } }, {}, (e, n, u) => {
           if (e) return resolve(false)
@@ -145,7 +153,7 @@ return module.exports = {
       })
       return promise.then(a => a)
     },
-    delete: function(href, idComentario) {
+    delete: function (href, idComentario) {
       db.recipes.loadDatabase()
       var promise = new Promise((resolve, reject) => {
         db.recipes.update({ href: href }, { $pull: { 'comentarios': { id: idComentario } } }, { multi: true, upsert: false }, (er, nou, u) => {
@@ -155,7 +163,7 @@ return module.exports = {
       return promise.then(a => a)
     }
   },
-  vote: function(href, ip, thumbUp) {
+  vote: function (href, ip, thumbUp) {
     db.users.loadDatabase()
     db.recipes.loadDatabase()
     console.log(`${ip} tentando votar em ${href} como ${thumbUp}`)
@@ -168,56 +176,56 @@ return module.exports = {
         for (const [i, _voto] of votes.entries()) {
           if (_voto.href == href) {
             found = true;
-            console.log("Aparentemente ele era ",_voto.like)
-            if(thumbUp != _voto.like) {
-            console.log("Changing mind...")
-            if (thumbUp) {
-              db.recipes.update({ href: href },
-                { $inc: { "votes.up": 1, "votes.down": -1 }, }, { multi: true, upsert: false }, (e, nou, u) => {
-                  if (e) console.log("oooops 191"); 
-                  
-                })
-            } else {
-              db.recipes.update({ href: href },
-                { $inc: { "votes.up": -1, "votes.down": 1 } }, { multi: true, upsert: false }, (e, nou, u) => {
-                  if (e) console.log("ooops 196");
-                  
-                })
-            }
-            db.users.find({ ip: ip }, (e, d) => {
-              if (e) console.log("ooops 112");
-              const v = d[0].votes[i].like
-              console.log("Currently its ", v);
-              const d_ = d[0]
-              d_.votes[i].like = !v
-              db.users.update({ ip: ip }, { $set: d_ }, {}, (ee, nn, uu) => {
-                if (ee) { console.log("ooops 117");  }
-              })
-            })
+            console.log("Aparentemente ele era ", _voto.like)
+            if (thumbUp != _voto.like) {
+              console.log("Changing mind...")
+              if (thumbUp) {
+                db.recipes.update({ href: href },
+                  { $inc: { "votes.up": 1, "votes.down": -1 }, }, { multi: true, upsert: false }, (e, nou, u) => {
+                    if (e) console.log("oooops 191");
 
-          }
-          }
-        }
-        if(!found){
-          console.log("Adicioanndo opiniao")
-          db.users.update({ ip: ip }, { $push: {votes:{href:href, like:thumbUp} }}, {}, (ee, nn, uu) => {
-                if (ee) { console.log("ooops 117");  }
+                  })
+              } else {
+                db.recipes.update({ href: href },
+                  { $inc: { "votes.up": -1, "votes.down": 1 } }, { multi: true, upsert: false }, (e, nou, u) => {
+                    if (e) console.log("ooops 196");
+
+                  })
+              }
+              db.users.find({ ip: ip }, (e, d) => {
+                if (e) console.log("ooops 112");
+                const v = d[0].votes[i].like
+                console.log("Currently its ", v);
+                const d_ = d[0]
+                d_.votes[i].like = !v
+                db.users.update({ ip: ip }, { $set: d_ }, {}, (ee, nn, uu) => {
+                  if (ee) { console.log("ooops 117"); }
+                })
               })
-            if (thumbUp) {
-              db.recipes.update({ href: href },
-                { $inc: { "votes.up": 1, "votes.down": -1 }, }, { multi: true, upsert: false }, (e, nou, u) => {
-                  if (e) console.log("oooops 191"); 
-                  
-                })
-            } else {
-              db.recipes.update({ href: href },
-                { $inc: { "votes.up": -1, "votes.down": 1 } }, { multi: true, upsert: false }, (e, nou, u) => {
-                  if (e) console.log("ooops 196");
-                  
-                })
+
             }
+          }
         }
-        
+        if (!found) {
+          console.log("Adicioanndo opiniao")
+          db.users.update({ ip: ip }, { $push: { votes: { href: href, like: thumbUp } } }, {}, (ee, nn, uu) => {
+            if (ee) { console.log("ooops 117"); }
+          })
+          if (thumbUp) {
+            db.recipes.update({ href: href },
+              { $inc: { "votes.up": 1}, }, { multi: true, upsert: false }, (e, nou, u) => {
+                if (e) console.log("oooops 191");
+
+              })
+          } else {
+            db.recipes.update({ href: href },
+              { $inc: { "votes.down": 1 } }, { multi: true, upsert: false }, (e, nou, u) => {
+                if (e) console.log("ooops 196");
+
+              })
+          }
+        }
+
       } else {
         await (this.addUser(ip, { href: href, like: thumbUp }))
       }

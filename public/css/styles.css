@@ -8,6 +8,7 @@
     padding:10px 20px;
     background-color: tomato;
     font-size: 20px;
+    min-width: 300px;
 }
 .header span a{
     color:#ededed
@@ -20,6 +21,15 @@ a:link {
 body div:not(.swal-overlay,.swal-modal,.swal-icon,.swal-title,.swal-text) {
     display: flex;
 }
+body{
+    display:flex;
+    flex-flow: column;
+    height: 100vh;
+}
+.clickable:hover {
+    cursor: pointer;
+    filter: brightness(90%);
+}
 
 .flex-hr {
     flex-direction: row;
@@ -29,6 +39,7 @@ body div:not(.swal-overlay,.swal-modal,.swal-icon,.swal-title,.swal-text) {
     flex-flow: column;
 }
 .footer{
+    margin-top:30px;
     background: tomato;
     padding: 20px;
     list-style: none;
@@ -38,4 +49,13 @@ body div:not(.swal-overlay,.swal-modal,.swal-icon,.swal-title,.swal-text) {
 .footer ul{
     list-style: none;
     color: white;
+    font-weight: bold;
+}
+.footer li{
+    font-size: 14px;
+    font-weight: normal;
+    padding:1px 5px;
+}
+.footer li a{
+    color:rgb(219, 219, 219);
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 
 <head>
     <base href="/">
@@ -29,15 +29,20 @@
                 <div class="ingrediente flex-hr">
                     <span>
                         <%=ingrediente.quantidade%>
-                            <%if(ingrediente.medida){%>
-                                <%=ingrediente.medida%>
-                                    <%}%>
-                                        <%if(ingrediente.ingrediente=="água" ){%>
-                                            <span>d'</span>
-                                            <%}else{%>
-                                                <span>de</span>
-                                                <%}%>
-                                                    <%=ingrediente.ingrediente%>
+                        <%if(ingrediente.medida && ingrediente.medida != "x"){%>
+                            <%=ingrediente.medida%>
+                        <%}%>
+                        <%if(ingrediente.medida && ingrediente.medida != "x"){%>
+                            <%if(ingrediente.ingrediente.startsWith("água") || ingrediente.ingrediente.startsWith("agua") ){%>
+                                <span>d'</span>
+                            <%}else{%>
+                                <span>de</span>
+                            <%}%>
+                        <%}else{%>
+                            <span>x</span>
+                        <%}%>
+
+                        <%=ingrediente.ingrediente%>
                     </span>
 
                 </div>
@@ -88,7 +93,7 @@
                         <span>Ainda não houve comentários desta receita</span>
                         <%}%>
         </div>
-
+        <%-include('./partials/footer')%>
 </body>
 <script>
     function datar(ts) {
@@ -138,13 +143,12 @@
                 $('.comment-section > div:eq(1)')
                     .before(`
                     <div class="comentario flex-hr" style="gap:5px;">
-                                <img src="../src/svgs/avatar.svg" width='50px' alt="">
-                                <div class="comentario-itself flex-vr">
-                                    <div class="comentario-nome" style="font-weight: medium;">
-                                        ${$('.my-comment input').val()}
-                                        <span class="time">Agora
-                                        </span>
-                                    </div>
+                            <img src="../src/svgs/avatar.svg" width='50px' alt="">
+                            <div class="comentario-itself flex-vr">
+                                <div class="comentario-nome" style="font-weight: medium;">
+                                    ${$('.my-comment input').val()}
+                                    <span class="time">Agora</span>
+                                </div>
                                 <div class="comentario-texto">
                                     ${$('.my-comment textarea').val()}
                                 </div>
